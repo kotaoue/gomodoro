@@ -10,7 +10,12 @@ import (
 )
 
 func main() {
-	i := 25
+	runTimer(25)
+
+	// createWindow()
+}
+
+func runTimer(i int) {
 	timer := time.After(time.Duration(10) * time.Second)
 	ticker := time.Tick(1 * time.Second)
 
@@ -21,11 +26,9 @@ func main() {
 			fmt.Printf("%d seconds have passed!\n", i)
 			return
 		case t := <-ticker:
-			fmt.Println("Current time:", t.Format("2006-01-02 15:04:05"))
+			fmt.Println(t.Format("15:04:05"))
 		}
 	}
-
-	// createWindow()
 }
 
 func createWindow() {
