@@ -10,9 +10,8 @@ import (
 )
 
 func main() {
-	runTimer(25)
-
-	// createWindow()
+	// runTimer(25)
+	createWindow()
 }
 
 func runTimer(i int) {
@@ -32,15 +31,18 @@ func runTimer(i int) {
 }
 
 func createWindow() {
-	myApp := app.New()
-	myWindow := myApp.NewWindow("Hello")
+	app := app.New()
+	window := app.NewWindow("Hello")
 
-	myWindow.SetContent(container.NewVBox(
+	window.SetContent(container.NewVBox(
 		widget.NewLabel("Hello Fyne!"),
+		widget.NewButton("Run", func() {
+			runTimer(10)
+		}),
 		widget.NewButton("Quit", func() {
-			myApp.Quit()
+			app.Quit()
 		}),
 	))
 
-	myWindow.ShowAndRun()
+	window.ShowAndRun()
 }
