@@ -4,45 +4,59 @@ import (
 	"fmt"
 	"time"
 
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 )
 
-func main() {
-	// runTimer(25)
-	createWindow()
+type timer struct {
+	Label  *widget.Label
+	Button *widget.Button
+	Second int
 }
 
-func runTimer(i int) {
-	timer := time.After(time.Duration(10) * time.Second)
+func (t *timer) run() {
+	counter := time.After(time.Duration(10) * time.Second)
 	ticker := time.Tick(1 * time.Second)
 
-	fmt.Printf("Waiting for %d seconds...\n", i)
+	fmt.Printf("Waiting for %d seconds...\n", t.Second)
 	for {
 		select {
-		case <-timer:
-			fmt.Printf("%d seconds have passed!\n", i)
+		case <-counter:
+			s := fmt.Sprintf("%d seconds have passed!", t.Second)
+			fmt.Println(s)
+			t.Label.SetText(s)
 			return
-		case t := <-ticker:
-			fmt.Println(t.Format("15:04:05"))
+		case tic := <-ticker:
+			s := tic.Format("15:04:05")
+			fmt.Println(s)
+			t.Label.SetText(s)
 		}
 	}
 }
 
-func createWindow() {
-	app := app.New()
-	window := app.NewWindow("Hello")
+func main() {
+	// runTimer(25)
+	t := &timer{}
+	t.Second = 25
+	t.Label = widget.NewLabel("")
+	t.Button = widget.NewButton("Start!", t.run)
 
-	window.SetContent(container.NewVBox(
-		widget.NewLabel("Hello Fyne!"),
-		widget.NewButton("Run", func() {
-			runTimer(10)
-		}),
-		widget.NewButton("Quit", func() {
-			app.Quit()
-		}),
-	))
+	w := createWindow(t)
+	w.ShowAndRun()
+}
 
-	window.ShowAndRun()
+func createWindow(t *timer) fyne.Window {
+	a := app.New()
+	w := a.NewWindow("Timer")
+	w.Resize(fyne.NewSize(300, 20))
+
+	w.SetContent(
+		container.NewVBox(
+			t.Label,
+			t.Button,
+		))
+
+	return w
 }
