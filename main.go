@@ -18,7 +18,21 @@ type timer struct {
 	Label  *widget.Label
 	Button *widget.Button
 	Second int
+
+	// TODO
+	// counter と ticker をここに持つ
 }
+
+/*
+func (t *timer) stop() {
+	t.Button.SetText("Start!")
+	// counter と ticker を止める
+	if !t.counter.Stop() {
+			<-t.counter.C // タイマーが既に満了している場合はチャネルを読み捨てる
+	}
+	ボタンのテキストと関数を元に戻す
+}
+*/
 
 func (t *timer) run() {
 	t.Button.SetText("Running...")
