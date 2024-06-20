@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"time"
 
@@ -9,6 +10,8 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"github.com/faiface/beep/mp3"
+	"github.com/faiface/beep/speaker"
 )
 
 type timer struct {
@@ -31,6 +34,7 @@ func (t *timer) run() {
 			s := fmt.Sprintf("%d seconds have passed!", t.Second)
 			fmt.Println(s)
 			t.Label.SetText(s)
+			playSound()
 			return
 		case <-ticker:
 			s := t.Second - int(time.Since(start).Seconds())
@@ -62,4 +66,25 @@ func createWindow(t *timer) fyne.Window {
 		))
 
 	return w
+}
+
+func playSound() error {
+	f, err := os.Open("assets/expiry.mp3")
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	streamer, format, err := mp3.Decode(f)
+	if err != nil {
+		return err
+	}
+	defer streamer.Close()
+
+	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+
+	speaker.Play(streamer)
+
+	time.Sleep(format.SampleRate.D(streamer.Len()))
+	return nil
 }
