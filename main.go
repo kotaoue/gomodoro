@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -17,9 +18,12 @@ type timer struct {
 }
 
 func (t *timer) run() {
-	counter := time.After(time.Duration(10) * time.Second)
+	t.Button.SetText("Running...")
+
+	counter := time.After(time.Duration(t.Second) * time.Second)
 	ticker := time.Tick(1 * time.Second)
 
+	start := time.Now()
 	fmt.Printf("Waiting for %d seconds...\n", t.Second)
 	for {
 		select {
@@ -28,19 +32,18 @@ func (t *timer) run() {
 			fmt.Println(s)
 			t.Label.SetText(s)
 			return
-		case tic := <-ticker:
-			s := tic.Format("15:04:05")
+		case <-ticker:
+			s := t.Second - int(time.Since(start).Seconds())
 			fmt.Println(s)
-			t.Label.SetText(s)
+			t.Label.SetText(strconv.Itoa(s))
 		}
 	}
 }
 
 func main() {
-	// runTimer(25)
 	t := &timer{}
-	t.Second = 25
-	t.Label = widget.NewLabel("")
+	t.Second = 25 * 60
+	t.Label = widget.NewLabel(strconv.Itoa(t.Second))
 	t.Button = widget.NewButton("Start!", t.run)
 
 	w := createWindow(t)
