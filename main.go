@@ -15,11 +15,11 @@ import (
 )
 
 type pomodoro struct {
-	Label   *widget.Label
-	Button  *widget.Button
-	Second  int
-	Timer   <-chan time.Time
-	Counter <-chan time.Time
+	Label  *widget.Label
+	Button *widget.Button
+	Second int
+	Timer  <-chan time.Time
+	Ticker <-chan time.Time
 	// TODO
 	// counter と ticker をここに持つ
 }
@@ -38,20 +38,20 @@ func (t *timer) stop() {
 func (p *pomodoro) run() {
 	p.Button.SetText("⏹️")
 
-	counter := time.After(time.Duration(p.Second) * time.Second)
-	ticker := time.Tick(1 * time.Second)
+	p.Timer = time.After(time.Duration(p.Second) * time.Second)
+	p.Ticker = time.Tick(1 * time.Second)
 
 	start := time.Now()
 	fmt.Printf("Waiting for %d seconds...\n", p.Second)
 	for {
 		select {
-		case <-counter:
+		case <-p.Timer:
 			s := fmt.Sprintf("%d seconds have passed!", p.Second)
 			fmt.Println(s)
 			p.Label.SetText(s)
 			playSound()
 			return
-		case <-ticker:
+		case <-p.Ticker:
 			s := p.Second - int(time.Since(start).Seconds())
 			fmt.Println(s)
 			p.Label.SetText(strconv.Itoa(s))
