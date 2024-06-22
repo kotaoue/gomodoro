@@ -41,7 +41,7 @@ type pomodoro struct {
 	Stopper chan struct{}
 }
 
-func (p *pomodoro) run() {
+func (p *pomodoro) start() {
 	p.Button.SetText(cfg.StopText)
 	p.Button.OnTapped = p.stop
 
@@ -80,7 +80,7 @@ func (p *pomodoro) stop() {
 	p.Label.SetText(strconv.Itoa(p.Second))
 
 	p.Button.SetText(cfg.StartText)
-	p.Button.OnTapped = p.run
+	p.Button.OnTapped = p.start
 	if p.Stopper != nil {
 		close(p.Stopper)
 	}
@@ -90,7 +90,7 @@ func main() {
 	p := &pomodoro{}
 	p.Second = cfg.TimerLength
 	p.Label = widget.NewLabel(strconv.Itoa(p.Second))
-	p.Button = widget.NewButton(cfg.StartText, p.run)
+	p.Button = widget.NewButton(cfg.StartText, p.start)
 
 	w := createWindow(p)
 	w.ShowAndRun()
