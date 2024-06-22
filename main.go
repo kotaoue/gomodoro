@@ -14,11 +14,12 @@ import (
 	"github.com/faiface/beep/speaker"
 )
 
-type timer struct {
-	Label  *widget.Label
-	Button *widget.Button
-	Second int
-
+type pomodoro struct {
+	Label   *widget.Label
+	Button  *widget.Button
+	Second  int
+	Timer   <-chan time.Time
+	Counter <-chan time.Time
 	// TODO
 	// counter と ticker をここに持つ
 }
@@ -34,49 +35,49 @@ func (t *timer) stop() {
 }
 */
 
-func (t *timer) run() {
-	t.Button.SetText("Running...")
+func (p *pomodoro) run() {
+	p.Button.SetText("Running...")
 
-	counter := time.After(time.Duration(t.Second) * time.Second)
+	counter := time.After(time.Duration(p.Second) * time.Second)
 	ticker := time.Tick(1 * time.Second)
 
 	start := time.Now()
-	fmt.Printf("Waiting for %d seconds...\n", t.Second)
+	fmt.Printf("Waiting for %d seconds...\n", p.Second)
 	for {
 		select {
 		case <-counter:
-			s := fmt.Sprintf("%d seconds have passed!", t.Second)
+			s := fmt.Sprintf("%d seconds have passed!", p.Second)
 			fmt.Println(s)
-			t.Label.SetText(s)
+			p.Label.SetText(s)
 			playSound()
 			return
 		case <-ticker:
-			s := t.Second - int(time.Since(start).Seconds())
+			s := p.Second - int(time.Since(start).Seconds())
 			fmt.Println(s)
-			t.Label.SetText(strconv.Itoa(s))
+			p.Label.SetText(strconv.Itoa(s))
 		}
 	}
 }
 
 func main() {
-	t := &timer{}
-	t.Second = 25 * 60
-	t.Label = widget.NewLabel(strconv.Itoa(t.Second))
-	t.Button = widget.NewButton("Start!", t.run)
+	p := &pomodoro{}
+	p.Second = 25 * 60
+	p.Label = widget.NewLabel(strconv.Itoa(p.Second))
+	p.Button = widget.NewButton("Start!", p.run)
 
-	w := createWindow(t)
+	w := createWindow(p)
 	w.ShowAndRun()
 }
 
-func createWindow(t *timer) fyne.Window {
+func createWindow(p *pomodoro) fyne.Window {
 	a := app.New()
 	w := a.NewWindow("Timer")
 	w.Resize(fyne.NewSize(300, 20))
 
 	w.SetContent(
 		container.NewVBox(
-			t.Label,
-			t.Button,
+			p.Label,
+			p.Button,
 		))
 
 	return w
