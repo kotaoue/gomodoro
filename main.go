@@ -103,7 +103,7 @@ func createWindow(p *pomodoro) fyne.Window {
 
 	w.SetContent(
 		container.NewVBox(
-			p.Label,
+			container.NewCenter(p.Label),
 			p.Button,
 		))
 
