@@ -36,7 +36,7 @@ func (t *timer) stop() {
 */
 
 func (p *pomodoro) run() {
-	p.Button.SetText("Running...")
+	p.Button.SetText("⏹️")
 
 	counter := time.After(time.Duration(p.Second) * time.Second)
 	ticker := time.Tick(1 * time.Second)
@@ -63,7 +63,7 @@ func main() {
 	p := &pomodoro{}
 	p.Second = 25 * 60
 	p.Label = widget.NewLabel(strconv.Itoa(p.Second))
-	p.Button = widget.NewButton("Start!", p.run)
+	p.Button = widget.NewButton("▶ ", p.run)
 
 	w := createWindow(p)
 	w.ShowAndRun()
@@ -71,8 +71,8 @@ func main() {
 
 func createWindow(p *pomodoro) fyne.Window {
 	a := app.New()
-	w := a.NewWindow("Timer")
-	w.Resize(fyne.NewSize(300, 20))
+	w := a.NewWindow("🍅")
+	w.Resize(fyne.NewSize(100, 20))
 
 	w.SetContent(
 		container.NewVBox(
