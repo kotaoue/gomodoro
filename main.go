@@ -2,15 +2,13 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"github.com/faiface/beep/mp3"
-	"github.com/faiface/beep/speaker"
+	"github.com/kotaoue/gomodoro/pkg/sound"
 )
 
 type config struct {
@@ -20,6 +18,7 @@ type config struct {
 	TimerLength  int
 	StartText    string
 	StopText     string
+	StopSound    string
 }
 
 var cfg = config{
@@ -29,6 +28,7 @@ var cfg = config{
 	TimerLength:  25 * 60,
 	StartText:    "▶",
 	StopText:     "⏹️",
+	StopSound:    "assets/expiry.mp3",
 }
 
 type pomodoro struct {
@@ -49,7 +49,7 @@ func (p *pomodoro) start() {
 	p.Stopper = make(chan struct{})
 
 	start := time.Now()
-	fmt.Printf("Waiting for %d seconds...\n", p.Second)
+	fmt.Println("START")
 
 	go func() {
 		for {
@@ -57,9 +57,9 @@ func (p *pomodoro) start() {
 			case <-p.Timer.C:
 				setText(
 					p.Label,
-					fmt.Sprintf("%d seconds have passed!", p.Second),
+					"FINISH",
 				)
-				playSound()
+				sound.Play(cfg.StopSound)
 				p.stop()
 				return
 			case <-p.Ticker.C:
@@ -91,6 +91,7 @@ func (p *pomodoro) stop() {
 func main() {
 	p := &pomodoro{}
 	p.Second = cfg.TimerLength
+	p.Second = 10
 	p.Label = widget.NewLabel(secToMD(p.Second))
 	p.Button = widget.NewButton(cfg.StartText, p.start)
 
@@ -119,25 +120,4 @@ func setText(l *widget.Label, s string) {
 
 func secToMD(sec int) string {
 	return fmt.Sprintf("%02d:%02d", sec/60, sec%60)
-}
-
-func playSound() error {
-	f, err := os.Open("assets/expiry.mp3")
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	streamer, format, err := mp3.Decode(f)
-	if err != nil {
-		return err
-	}
-	defer streamer.Close()
-
-	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
-
-	speaker.Play(streamer)
-
-	time.Sleep(format.SampleRate.D(streamer.Len()))
-	return nil
 }
