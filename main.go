@@ -27,7 +27,7 @@ var cfg = config{
 	WindowWidth:  100,
 	WindowHeight: 20,
 	WindowTitle:  "🍅",
-	TimerLength:  25 * 60,
+	TimerLength:  25,
 	StartText:    "▶",
 	StopText:     "⏹️",
 }
@@ -88,7 +88,7 @@ func (p *pomodoro) stop() {
 
 func main() {
 	p := &pomodoro{}
-	p.Second = cfg.TimerLength
+	p.Second = cfg.TimerLength * 60
 	p.Label = widget.NewLabel(strconv.Itoa(p.Second))
 	p.Button = widget.NewButton(cfg.StartText, p.start)
 
