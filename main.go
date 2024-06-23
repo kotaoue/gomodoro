@@ -55,17 +55,18 @@ func (p *pomodoro) start() {
 		for {
 			select {
 			case <-p.Timer.C:
-				s := fmt.Sprintf("%d seconds have passed!", p.Second)
-				fmt.Println(s)
-				p.Label.SetText(s)
+				setText(
+					p.Label,
+					fmt.Sprintf("%d seconds have passed!", p.Second),
+				)
 				playSound()
 				p.stop()
 				return
 			case <-p.Ticker.C:
-				sec := p.Second - int(time.Since(start).Seconds())
-				s := secToMD(sec)
-				fmt.Println(s)
-				p.Label.SetText(s)
+				setText(
+					p.Label,
+					secToMD(p.Second-int(time.Since(start).Seconds())),
+				)
 			case <-p.Stopper:
 				p.Timer.Stop()
 				p.Ticker.Stop()
@@ -77,6 +78,7 @@ func (p *pomodoro) start() {
 
 func (p *pomodoro) stop() {
 	p.Second = cfg.TimerLength
+	setText(p.Label, secToMD(p.Second))
 	p.Label.SetText(secToMD(p.Second))
 
 	p.Button.SetText(cfg.StartText)
@@ -108,6 +110,11 @@ func createWindow(p *pomodoro) fyne.Window {
 		))
 
 	return w
+}
+
+func setText(l *widget.Label, s string) {
+	fmt.Println(s)
+	l.SetText(s)
 }
 
 func secToMD(sec int) string {
