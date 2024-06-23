@@ -91,6 +91,7 @@ func (p *pomodoro) stop() {
 func main() {
 	p := &pomodoro{}
 	p.Second = cfg.TimerLength
+	p.Second = 10
 	p.Label = widget.NewLabel(secToMD(p.Second))
 	p.Button = widget.NewButton(cfg.StartText, p.start)
 
