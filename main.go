@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -27,7 +26,7 @@ var cfg = config{
 	WindowWidth:  100,
 	WindowHeight: 20,
 	WindowTitle:  "🍅",
-	TimerLength:  25,
+	TimerLength:  25 * 60,
 	StartText:    "▶",
 	StopText:     "⏹️",
 }
@@ -63,9 +62,10 @@ func (p *pomodoro) start() {
 				p.stop()
 				return
 			case <-p.Ticker.C:
-				s := p.Second - int(time.Since(start).Seconds())
+				sec := p.Second - int(time.Since(start).Seconds())
+				s := secToMD(sec)
 				fmt.Println(s)
-				p.Label.SetText(strconv.Itoa(s))
+				p.Label.SetText(s)
 			case <-p.Stopper:
 				p.Timer.Stop()
 				p.Ticker.Stop()
@@ -77,7 +77,7 @@ func (p *pomodoro) start() {
 
 func (p *pomodoro) stop() {
 	p.Second = cfg.TimerLength
-	p.Label.SetText(strconv.Itoa(p.Second))
+	p.Label.SetText(secToMD(p.Second))
 
 	p.Button.SetText(cfg.StartText)
 	p.Button.OnTapped = p.start
@@ -88,8 +88,8 @@ func (p *pomodoro) stop() {
 
 func main() {
 	p := &pomodoro{}
-	p.Second = cfg.TimerLength * 60
-	p.Label = widget.NewLabel(strconv.Itoa(p.Second))
+	p.Second = cfg.TimerLength
+	p.Label = widget.NewLabel(secToMD(p.Second))
 	p.Button = widget.NewButton(cfg.StartText, p.start)
 
 	w := createWindow(p)
@@ -108,6 +108,10 @@ func createWindow(p *pomodoro) fyne.Window {
 		))
 
 	return w
+}
+
+func secToMD(sec int) string {
+	return fmt.Sprintf("%02d:%02d", sec/60, sec%60)
 }
 
 func playSound() error {
