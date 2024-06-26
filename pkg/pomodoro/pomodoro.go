@@ -70,18 +70,12 @@ func (p *Pomodoro) start() {
 		for {
 			select {
 			case <-p.Timer.C:
-				p.setText(
-					p.Label,
-					"FINISH",
-				)
+				p.setText("FINISH")
 				sound.Play(p.Config.StopSound)
 				p.stop()
 				return
 			case <-p.Ticker.C:
-				p.setText(
-					p.Label,
-					p.secToMD(p.Second-int(time.Since(start).Seconds())),
-				)
+				p.setText(p.secToMD(p.Second - int(time.Since(start).Seconds())))
 			case <-p.Stopper:
 				p.Timer.Stop()
 				p.Ticker.Stop()
@@ -93,8 +87,7 @@ func (p *Pomodoro) start() {
 
 func (p *Pomodoro) stop() {
 	p.Second = p.Config.TimerLength
-	p.setText(p.Label, p.secToMD(p.Second))
-	p.Label.SetText(p.secToMD(p.Second))
+	p.setText(p.secToMD(p.Second))
 
 	p.Button.SetText(p.Config.StartText)
 	p.Button.OnTapped = p.start
@@ -103,9 +96,9 @@ func (p *Pomodoro) stop() {
 	}
 }
 
-func (p *Pomodoro) setText(l *widget.Label, s string) {
+func (p *Pomodoro) setText(s string) {
 	fmt.Println(s)
-	l.SetText(s)
+	p.Label.SetText(s)
 }
 
 func (p *Pomodoro) secToMD(sec int) string {
