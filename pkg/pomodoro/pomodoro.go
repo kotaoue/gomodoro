@@ -71,7 +71,7 @@ func (p *Pomodoro) start() {
 		for {
 			select {
 			case <-p.Timer.C:
-				history.Append(fmt.Sprintf("%s,%s\n", start.Format("2006-01-02 15:04:05"), time.Now().Format("2006-01-02 15:04:05")))
+				history.Append(start.Format("2006-01-02 15:04:05"), time.Now().Format("2006-01-02 15:04:05"))
 				p.setText("FINISH")
 				sound.Play(p.Config.StopSound)
 				p.stop()
