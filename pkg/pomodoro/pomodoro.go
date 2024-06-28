@@ -8,6 +8,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"github.com/kotaoue/gomodoro/pkg/history"
 	"github.com/kotaoue/gomodoro/pkg/sound"
 )
 
@@ -70,6 +71,7 @@ func (p *Pomodoro) start() {
 		for {
 			select {
 			case <-p.Timer.C:
+				history.Append(fmt.Sprintf("%s,%s\n", start.Format("2006-01-02 15:04:05"), time.Now().Format("2006-01-02 15:04:05")))
 				p.setText("FINISH")
 				sound.Play(p.Config.StopSound)
 				p.stop()
