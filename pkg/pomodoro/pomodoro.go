@@ -8,6 +8,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/driver/desktop"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/kotaoue/gomodoro/pkg/history"
 	"github.com/kotaoue/gomodoro/pkg/sound"
@@ -53,6 +54,7 @@ func (p *Pomodoro) CreateWindow() fyne.Window {
 				w.Show()
 			}))
 		desk.SetSystemTrayMenu(m)
+		desk.SetSystemTrayIcon(theme.ColorChromaticIcon())
 
 		w.SetCloseIntercept(func() {
 			w.Hide()
