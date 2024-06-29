@@ -7,6 +7,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/widget"
 	"github.com/kotaoue/gomodoro/pkg/history"
 	"github.com/kotaoue/gomodoro/pkg/sound"
@@ -45,6 +46,19 @@ func NewPomodoro(cfg Config) *Pomodoro {
 func (p *Pomodoro) CreateWindow() fyne.Window {
 	a := app.New()
 	w := a.NewWindow(p.Config.WindowTitle)
+
+	if desk, ok := a.(desktop.App); ok {
+		m := fyne.NewMenu(p.Config.WindowTitle,
+			fyne.NewMenuItem(p.Config.WindowTitle, func() {
+				w.Show()
+			}))
+		desk.SetSystemTrayMenu(m)
+
+		w.SetCloseIntercept(func() {
+			w.Hide()
+		})
+	}
+
 	w.Resize(fyne.NewSize(p.Config.WindowWidth, p.Config.WindowHeight))
 
 	w.SetContent(
